@@ -175,7 +175,7 @@ if __name__ == "__main__":
     print('Press ctrl+shift+s to kill the program.')
     IMG_TEMPLATES = {}
     for state in list(State):
-        IMG_TEMPLATES[state.name] = cv2.imread('%s.jpg' % state.name)
+        IMG_TEMPLATES[state.name] = cv2.imread('imgs/%s.jpg' % state.name)
     LEFT, TOP, RIGHT, BOTTOM = getLT()
     WIDTH = RIGHT - LEFT
     HEIGHT = BOTTOM - TOP
