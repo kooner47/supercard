@@ -30,7 +30,7 @@ RESOLUTION = (338, 628)
 
 mouse = Controller()
 
-NUM_GAMES = 0
+NUM_GAMES = 1
 FLAG = True
 
 
@@ -165,7 +165,9 @@ def main():
         else:
             num_unknowns = 0
             if state != State.QUICK_GAME:
-                print(state, 'Game #%d' % NUM_GAMES)
+                print(state)
+                if state == State.OPPONENT:
+                    print('Starting game #%d.' % NUM_GAMES)
         timeout = doActionForState(state, coords)
         time.sleep(timeout)
 
