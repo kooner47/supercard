@@ -23,6 +23,7 @@ class State(Enum):
     DONE_PICKS = 8
     WHEEL2 = 10
     WHEEL3 = 11
+    WHEEL4 = 12
 
 
 WINDOW_NAME = 'NoxPlayer'
@@ -61,6 +62,67 @@ def getStateAndCoords():
     return 'UNKNOWN', []
 
 
+def swapToBronzesThenAutofill():
+    def clickSwap():
+        clickPc(0.381481, 0.890656, 0.2)
+
+    # Deck editor
+    clickPc(0.359259, 0.960239, 0.5)
+
+    # NBA 1
+    clickPc(0.200000, 0.373757, 0.2)
+    clickSwap()
+    clickPc(0.507407, 0.337972, 0.2)
+
+    # NBA 2
+    clickPc(0.400000, 0.369781, 0.2)
+    clickSwap()
+    clickPc(0.503704, 0.483101, 0.2)
+
+    # NBA 3
+    clickPc(0.592593, 0.369781, 0.2)
+    clickSwap()
+    clickPc(0.492593, 0.626243, 0.2)
+
+    # NBA 4
+    clickPc(0.807407, 0.373757, 0.2)
+    clickSwap()
+    clickPc(0.500000, 0.751491, 0.2)
+
+    # WNBA 1
+    clickPc(0.396296, 0.552684, 0.2)
+    clickSwap()
+    clickPc(0.507407, 0.337972, 0.2)
+
+    # WNBA 2
+    clickPc(0.600000, 0.546720, 0.2)
+    clickSwap()
+    clickPc(0.503704, 0.483101, 0.2)
+
+    # Support 1
+    clickPc(0.407407, 0.691849, 0.2)
+    clickSwap()
+    clickPc(0.507407, 0.337972, 0.2)
+
+    # Support 2
+    clickPc(0.618519, 0.689861, 0.2)
+    clickSwap()
+    clickPc(0.503704, 0.483101, 0.2)
+
+    # Back
+    clickPc(0.059259, 0.079523, 1)
+
+    # Deck editor
+    clickPc(0.359259, 0.960239, 0.5)
+
+    # Autofill, Yes
+    clickPc(0.270370, 0.938370, 0.2)
+    clickPc(0.300000, 0.604374, 0.2)
+
+    # Back
+    clickPc(0.059259, 0.079523, 1)
+
+
 def doActionForState(state, coords):
     global NUM_GAMES
     if state == State.SPLASH:
@@ -70,6 +132,9 @@ def doActionForState(state, coords):
         click(*coords)
         return 1
     elif state == State.OPPONENT:
+        if NUM_GAMES >= 20:
+            swapToBronzesThenAutofill()
+            NUM_GAMES = 0
         click(*coords)
         NUM_GAMES += 1
         return 7
@@ -126,6 +191,11 @@ def doActionForState(state, coords):
         time.sleep(2)
         click(*coords)
         return 2
+    elif state == State.WHEEL4:
+        clickPc(0.5, 0.5)
+        time.sleep(2)
+        clickPc(0.5, 0.5)
+        return 1
     elif state == State.DONE_PICKS:
         clickPc(0.5000, 0.9422)
         return 1.2
@@ -167,7 +237,7 @@ def main():
             if state != State.QUICK_GAME:
                 print(state)
                 if state == State.OPPONENT:
-                    print('Starting game #%d.' % NUM_GAMES)
+                    print('Starting match #%d.' % NUM_GAMES)
         timeout = doActionForState(state, coords)
         time.sleep(timeout)
 
