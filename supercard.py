@@ -20,7 +20,8 @@ class State(Enum):
     QUICK_GAME = 5
     TAP_TO_CONTINUE = 6
     PICK = 7
-    DONE_PICKS = 8
+    PICK2 = 8
+    DONE_PICKS = 9
     WHEEL2 = 10
     WHEEL3 = 11
     WHEEL4 = 12
@@ -154,7 +155,7 @@ def doActionForState(state, coords):
     elif state == State.TAP_TO_CONTINUE:
         clickPc(0.5, 0.5)
         return 0.8
-    elif state == State.PICK:
+    elif state == State.PICK or state == State.PICK2:
         x = 0.118
         y = 0.245
         rand = random.random()
