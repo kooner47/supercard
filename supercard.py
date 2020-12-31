@@ -32,7 +32,6 @@ RESOLUTION = (338, 628)
 
 mouse = Controller()
 
-NUM_GAMES = 1
 FLAG = True
 
 
@@ -244,6 +243,10 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) >= 2:
+        NUM_GAMES = int(sys.argv[1])
+    else:
+        NUM_GAMES = 1
     keyboard.add_hotkey('ctrl+shift+s', killer)
     print('Press ctrl+shift+s to kill the program.')
     IMG_TEMPLATES = {}
