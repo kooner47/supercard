@@ -132,7 +132,7 @@ def doActionForState(state, coords):
         click(*coords)
         return 1
     elif state == State.OPPONENT:
-        if NUM_GAMES >= 20:
+        if NUM_GAMES >= 5:
             swapToBronzesThenAutofill()
             NUM_GAMES = 0
         click(*coords)
