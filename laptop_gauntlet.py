@@ -92,7 +92,7 @@ def doActionForState(state, coords):
         return 0.1
     elif state == State.TAP_TO_CONTINUE:
         clickPc(0.5, 0.5)
-        return 0.8
+        return 0.4
     elif state == State.PICK or state == State.PICK2:
         x = 0.118
         y = 0.245
@@ -121,7 +121,7 @@ def doActionForState(state, coords):
                     if random.random() < 0.5:
                         continue
                     clickPc(x + 0.188 * col, y + 0.127 * row, timeout=0.001)
-        return 1
+        return 0.5
     elif state == State.WHEEL2:
         click(*coords)
         return 2
