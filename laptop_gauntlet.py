@@ -15,6 +15,8 @@ import sys
 class State(Enum):
     SPLASH = 1
     MENU = 2
+    AD_EMPTY = 15
+    AD_OK = 16
     OPPONENT1 = 3
     OPPONENT2 = 4
     QUARTER = 5
@@ -141,6 +143,28 @@ def doActionForState(state, coords):
     elif state == State.POINTS:
         clickPc(0.5, 0.5)
         return 1.5
+    elif state == State.AD_EMPTY:
+        click(*coords)
+        time.sleep(0.5)
+        clickPc(0.483412, 0.673575)
+        time.sleep(0.5)
+        clickPc(0.483412, 0.672280)
+        for i in range(5):
+            time.sleep(8)
+            print('Trying to quit ad attempt %d' % (i+1))
+            clickPc(1.035545, 0.895078)
+            time.sleep(0.5)
+            clickPc(1.035545, 0.895078)
+            time.sleep(3)
+            state, coords = getStateAndCoords()
+            if state == State.AD_OK:
+                click(*coords)
+                return 1
+        print('Ad failed to complete')
+        exit()
+    elif state == State.AD_OK:
+        click(*coords)
+        return 2
 
 
 def clickPc(xPc, yPc, timeout=0.05):
