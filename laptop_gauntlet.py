@@ -145,6 +145,10 @@ def doActionForState(state, coords):
         clickPc(0.5, 0.5)
         return 1.5
     elif state == State.AD_EMPTY:
+        if NO_ADS:
+            print('sleeping for 16 minutes')
+            time.sleep(1000)
+            return 0
         click(*coords)
         time.sleep(0.5)
         clickPc(0.483412, 0.673575)
@@ -214,6 +218,11 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        print('no ads')
+        NO_ADS = True
+    else:
+        NO_ADS = False
     keyboard.add_hotkey('ctrl+shift+s', killer)
     print('Press ctrl+shift+s to kill the program.')
     IMG_TEMPLATES = {}
