@@ -15,20 +15,25 @@ import sys
 class State(Enum):
     SPLASH = 1
     MENU = 2
-    OPPONENT = 3
-    QUARTER = 4
-    QUICK_GAME = 5
-    TAP_TO_CONTINUE = 6
-    PICK = 7
-    PICK2 = 8
-    DONE_PICKS = 9
-    WHEEL2 = 10
-    WHEEL3 = 11
-    WHEEL4 = 12
+    AD_EMPTY = 15
+    AD_OK = 16
+    AD_RESUME = 17
+    OPPONENT1 = 3
+    OPPONENT2 = 4
+    QUARTER = 5
+    GAUNTLET = 6
+    TAP_TO_CONTINUE = 7
+    PICK = 8
+    PICK2 = 9
+    DONE_PICKS = 10
+    WHEEL2 = 11
+    WHEEL3 = 12
+    WHEEL4 = 13
+    POINTS = 14
 
 
 WINDOW_NAME = 'NoxPlayer'
-RESOLUTION = (338, 628)
+RESOLUTION = (527, 965)
 
 mouse = Controller()
 
@@ -62,81 +67,18 @@ def getStateAndCoords():
     return 'UNKNOWN', []
 
 
-def swapToBronzesThenAutofill():
-    def clickSwap():
-        clickPc(0.381481, 0.890656, 0.2)
-
-    # Deck editor
-    clickPc(0.359259, 0.960239, 0.5)
-
-    # NBA 1
-    clickPc(0.200000, 0.373757, 0.2)
-    clickSwap()
-    clickPc(0.507407, 0.337972, 0.2)
-
-    # NBA 2
-    clickPc(0.400000, 0.369781, 0.2)
-    clickSwap()
-    clickPc(0.503704, 0.483101, 0.2)
-
-    # NBA 3
-    clickPc(0.592593, 0.369781, 0.2)
-    clickSwap()
-    clickPc(0.492593, 0.626243, 0.2)
-
-    # NBA 4
-    clickPc(0.807407, 0.373757, 0.2)
-    clickSwap()
-    clickPc(0.500000, 0.751491, 0.2)
-
-    # WNBA 1
-    clickPc(0.396296, 0.552684, 0.2)
-    clickSwap()
-    clickPc(0.507407, 0.337972, 0.2)
-
-    # WNBA 2
-    clickPc(0.600000, 0.546720, 0.2)
-    clickSwap()
-    clickPc(0.503704, 0.483101, 0.2)
-
-    # Support 1
-    clickPc(0.407407, 0.691849, 0.2)
-    clickSwap()
-    clickPc(0.507407, 0.337972, 0.2)
-
-    # Support 2
-    clickPc(0.618519, 0.689861, 0.2)
-    clickSwap()
-    clickPc(0.503704, 0.483101, 0.2)
-
-    # Back
-    clickPc(0.059259, 0.079523, 1)
-
-    # Deck editor
-    clickPc(0.359259, 0.960239, 0.5)
-
-    # Autofill, Yes
-    clickPc(0.270370, 0.938370, 0.2)
-    clickPc(0.300000, 0.604374, 0.2)
-
-    # Back
-    clickPc(0.059259, 0.079523, 1)
-
-
 def doActionForState(state, coords):
-    global NUM_GAMES
     if state == State.SPLASH:
         click(*coords)
         return 3
     elif state == State.MENU:
         click(*coords)
         return 1
-    elif state == State.OPPONENT:
-        if NUM_GAMES >= 15:
-            swapToBronzesThenAutofill()
-            NUM_GAMES = 0
+    elif state == State.OPPONENT1:
         click(*coords)
-        NUM_GAMES += 1
+        return 1
+    elif state == State.OPPONENT2:
+        click(*coords)
         return 7
     elif state == State.QUARTER:
         clickPc(0.177778, 0.940239, 0.02)
@@ -146,14 +88,14 @@ def doActionForState(state, coords):
         clickPc(0.759259, 0.940239, 0.02)
         clickPc(0.907407, 0.940239, 0.02)
         return 0.5
-    elif state == State.QUICK_GAME:
+    elif state == State.GAUNTLET:
         for _ in range(5):
             clickPc(0.518519 + (random.random() - 0.5) * 0.01,
                     0.545817 + (random.random() - 0.5) * 0.01, 0.001)
         return 0.1
     elif state == State.TAP_TO_CONTINUE:
-        clickPc(0.5, 0.5)
-        return 0.8
+        clickPc(0.502370, 0.941710)
+        return 0.4
     elif state == State.PICK or state == State.PICK2:
         x = 0.118
         y = 0.245
@@ -182,7 +124,7 @@ def doActionForState(state, coords):
                     if random.random() < 0.5:
                         continue
                     clickPc(x + 0.188 * col, y + 0.127 * row, timeout=0.001)
-        return 1
+        return 0.5
     elif state == State.WHEEL2:
         click(*coords)
         return 2
@@ -199,6 +141,39 @@ def doActionForState(state, coords):
     elif state == State.DONE_PICKS:
         clickPc(0.5000, 0.9422)
         return 1.2
+    elif state == State.POINTS:
+        clickPc(0.5, 0.5)
+        return 1.5
+    elif state == State.AD_EMPTY:
+        if NO_ADS:
+            print('sleeping for 16 minutes')
+            time.sleep(1000)
+            return 0
+        click(*coords)
+        time.sleep(0.5)
+        clickPc(0.483412, 0.673575)
+        time.sleep(0.5)
+        clickPc(0.483412, 0.672280)
+        for i in range(5):
+            time.sleep(8)
+            print('Trying to quit ad attempt %d' % (i+1))
+            clickPc(1.035545, 0.895078)
+            time.sleep(0.5)
+            clickPc(1.035545, 0.895078)
+            time.sleep(3)
+            state, coords = getStateAndCoords()
+            if state == State.AD_OK:
+                click(*coords)
+                return 1
+            elif state == State.AD_RESUME:
+                click(*coords)
+            elif state != 'UNKNOWN':
+                return 1
+        print('Ad failed to complete')
+        exit()
+    elif state == State.AD_OK:
+        click(*coords)
+        return 2
 
 
 def clickPc(xPc, yPc, timeout=0.05):
@@ -234,25 +209,26 @@ def main():
             continue
         else:
             num_unknowns = 0
-            if state != State.QUICK_GAME:
+            if state != State.GAUNTLET:
                 print(state)
-                if state == State.OPPONENT:
-                    print('Starting match #%d.' % NUM_GAMES)
+                if state == State.OPPONENT1:
+                    print('Starting match.')
         timeout = doActionForState(state, coords)
         time.sleep(timeout)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 2:
-        NUM_GAMES = int(sys.argv[1])
+    if len(sys.argv) > 1:
+        print('no ads')
+        NO_ADS = True
     else:
-        NUM_GAMES = 1
+        NO_ADS = False
     keyboard.add_hotkey('ctrl+shift+s', killer)
     print('Press ctrl+shift+s to kill the program.')
     IMG_TEMPLATES = {}
     for state in list(State):
         IMG_TEMPLATES[state.name] = cv2.imread(
-            'quick_imgs/%s.jpg' % state.name)
+            'imgs_gauntlet/%s.jpg' % state.name)
     LEFT, TOP, RIGHT, BOTTOM = getLT()
     WIDTH = RIGHT - LEFT
     HEIGHT = BOTTOM - TOP

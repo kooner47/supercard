@@ -15,6 +15,9 @@ import sys
 class State(Enum):
     SPLASH = 1
     MENU = 2
+    AD_EMPTY = 15
+    AD_OK = 16
+    AD_RESUME = 17
     OPPONENT1 = 3
     OPPONENT2 = 4
     QUARTER = 5
@@ -30,7 +33,7 @@ class State(Enum):
 
 
 WINDOW_NAME = 'NoxPlayer'
-RESOLUTION = (338, 628)
+RESOLUTION = (527, 965)
 
 mouse = Controller()
 
@@ -91,8 +94,8 @@ def doActionForState(state, coords):
                     0.545817 + (random.random() - 0.5) * 0.01, 0.001)
         return 0.1
     elif state == State.TAP_TO_CONTINUE:
-        clickPc(0.5, 0.5)
-        return 0.8
+        clickPc(0.502370, 0.941710)
+        return 0.4
     elif state == State.PICK or state == State.PICK2:
         x = 0.118
         y = 0.245
@@ -121,7 +124,7 @@ def doActionForState(state, coords):
                     if random.random() < 0.5:
                         continue
                     clickPc(x + 0.188 * col, y + 0.127 * row, timeout=0.001)
-        return 1
+        return 0.5
     elif state == State.WHEEL2:
         click(*coords)
         return 2
@@ -141,6 +144,33 @@ def doActionForState(state, coords):
     elif state == State.POINTS:
         clickPc(0.5, 0.5)
         return 1.5
+    elif state == State.AD_EMPTY:
+        if NO_ADS:
+            print('skipping ad')
+            return 0
+        click(*coords)
+        time.sleep(0.5)
+        clickPc(0.303318, 0.594560)
+        for i in range(5):
+            time.sleep(8)
+            print('Trying to quit ad attempt %d' % (i+1))
+            clickPc(1.035545, 0.895078)
+            time.sleep(0.5)
+            clickPc(1.035545, 0.895078)
+            time.sleep(3)
+            state, coords = getStateAndCoords()
+            if state == State.AD_OK:
+                click(*coords)
+                return 1
+            elif state == State.AD_RESUME:
+                click(*coords)
+            elif state != 'UNKNOWN':
+                return 1
+        print('Ad failed to complete')
+        exit()
+    elif state == State.AD_OK:
+        click(*coords)
+        return 1
 
 
 def clickPc(xPc, yPc, timeout=0.05):
@@ -185,12 +215,17 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        print('no ads')
+        NO_ADS = True
+    else:
+        NO_ADS = False
     keyboard.add_hotkey('ctrl+shift+s', killer)
     print('Press ctrl+shift+s to kill the program.')
     IMG_TEMPLATES = {}
     for state in list(State):
         IMG_TEMPLATES[state.name] = cv2.imread(
-            'gauntlet_imgs/%s.jpg' % state.name)
+            'imgs_quick/%s.jpg' % state.name)
     LEFT, TOP, RIGHT, BOTTOM = getLT()
     WIDTH = RIGHT - LEFT
     HEIGHT = BOTTOM - TOP
